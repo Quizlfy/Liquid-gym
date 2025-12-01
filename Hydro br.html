@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Liquid Gym | Sinai Uni Kantara Branch</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        deep: {
+                            900: '#020617',
+                            800: '#0f172a',
+                        },
+                        neon: {
+                            cyan: '#06b6d4',
+                            blue: '#3b82f6',
+                            purple: '#8b5cf6'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4; 
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .glass-card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(6, 182, 212, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px -10px rgba(6, 182, 212, 0.2);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+        }
+
+        /* Video Responsive Container */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- WATER WAVE TRANSITION ANIMATION --- */
+        #wave-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150vh; /* Taller than screen to hide wave shape */
+            background: linear-gradient(180deg, #06b6d4 0%, #3b82f6 80%, transparent 100%);
+            z-index: 100; /* Above everything */
+            transform: translateY(-150%); /* Hidden above */
+            pointer-events: none;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        /* The animation class triggered by JS */
+        .washing {
+            animation: washDown 1.5s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+        }
+
+        @keyframes washDown {
+            0% {
+                transform: translateY(-150%);
+            }
+            50% {
+                transform: translateY(-20%); /* Covers screen */
+            }
+            100% {
+                transform: translateY(100%); /* Exits bottom */
+            }
+        }
+    </style>
+</head>
+<body class="bg-deep-900 text-slate-200 antialiased selection:bg-neon-cyan selection:text-white">
+
+    <!-- WAVE TRANSITION ELEMENT -->
+    <div id="wave-overlay">
+        <!-- Optional: SVG wave shape at the bottom edge for smoother look -->
+        <svg class="w-full h-32 fill-current text-blue-500 opacity-50 mb-[-1px]" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+
+    <!-- Floating Navigation (Mobile Optimized) - Updated to 4 items -->
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[90%] max-w-sm glass rounded-full p-3 shadow-2xl flex justify-between items-center px-8 border border-white/10">
+        <!-- Home Button with ID for JS -->
+        <a href="#home" id="home-btn" class="p-2 text-slate-400 hover:text-neon-cyan transition-all duration-300 hover:-translate-y-1 flex flex-col items-center gap-1 group relative">
+            <i class="ph ph-house text-2xl"></i>
+            <span class="absolute -top-10 bg-deep-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 pointer-events-none">Home</span>
+        </a>
+        
+        <!-- Videos -->
+        <a href="#videos" class="p-2 text-slate-400 hover:text-neon-cyan transition-all duration-300 hover:-translate-y-1 flex flex-col items-center gap-1 group relative">
+            <i class="ph ph-play-circle text-2xl"></i>
+            <span class="absolute -top-10 bg-deep-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 pointer-events-none">Videos</span>
+        </a>
+
+        <!-- Programs -->
+        <a href="#programs" class="p-2 text-slate-400 hover:text-neon-cyan transition-all duration-300 hover:-translate-y-1 flex flex-col items-center gap-1 group relative">
+            <i class="ph ph-person-simple-swim text-2xl"></i>
+            <span class="absolute -top-10 bg-deep-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 pointer-events-none">Programs</span>
+        </a>
+        
+        <!-- Featured (Benefits) -->
+        <a href="#benefits" class="p-2 text-slate-400 hover:text-neon-cyan transition-all duration-300 hover:-translate-y-1 flex flex-col items-center gap-1 group relative">
+            <i class="ph ph-star text-2xl"></i>
+            <span class="absolute -top-10 bg-deep-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity border border-white/10 pointer-events-none">Featured</span>
+        </a>
+    </nav>
+
+    <!-- Branding Header -->
+    <header class="fixed top-0 w-full z-40 p-6 bg-gradient-to-b from-deep-900 to-transparent">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
+                    <i class="ph-fill ph-drop text-neon-cyan text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-lg leading-none text-white tracking-wide">LIQUID<span class="text-neon-cyan">GYM</span></h1>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-[0.2em]">Sinai Uni Kantara Branch</p>
+                </div>
+            </div>
+            <a href="#contact" class="px-4 py-2 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-colors backdrop-blur-sm">
+                Book Now
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 pb-10">
+        <!-- Abstract Background -->
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-0 left-0 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-pulse-slow"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-cyan-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-pulse-slow" style="animation-delay: 2s;"></div>
+            <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1530549387789-4c1017266635?ixlib=rb-1.2.1&auto=format&fit=crop&w=1080&q=80')] bg-cover bg-center opacity-10"></div>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10 text-center">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-neon-cyan text-xs font-bold uppercase tracking-wider mb-6 animate-float">
+                <span class="w-2 h-2 rounded-full bg-neon-cyan animate-pulse"></span>
+                Sinai Uni Kantara Branch
+            </div>
+            
+            <h1 class="font-display text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                Train Without <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-neon-blue text-glow">Gravity.</span>
+            </h1>
+            
+            <p class="text-slate-400 text-lg max-w-lg mx-auto mb-10 leading-relaxed">
+                Experience high-resistance, low-impact training. The advanced aquatic fitness solution for rehabilitation and peak performance.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#videos" class="group relative px-8 py-4 bg-white text-deep-900 rounded-xl font-bold overflow-hidden transition-transform active:scale-95">
+                    <span class="relative z-10 flex items-center gap-2">
+                        <i class="ph-fill ph-play-circle text-xl"></i> Watch Demos
+                    </span>
+                    <div class="absolute inset-0 bg-neon-cyan transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
+                </a>
+                <a href="#benefits" class="px-8 py-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors font-bold backdrop-blur-sm">
+                    Learn Benefits
+                </a>
+            </div>
+        </div>
+        
+        <!-- NEW: Wave Separator Bottom -->
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none">
+            <svg class="relative block w-full h-[50px] md:h-[100px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="fill-deep-800"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- NEW: YouTube Video Gallery Section -->
+    <section id="videos" class="py-24 bg-deep-800 relative">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="h-px bg-slate-700 flex-1"></div>
+                <h2 class="font-display text-2xl text-white font-bold uppercase tracking-widest"><i class="ph-fill ph-youtube-logo text-red-500 mr-2"></i>Action Center</h2>
+                <div class="h-px bg-slate-700 flex-1"></div>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Video 1: Aerobic Bicycle -->
+                <div class="group relative overflow-hidden rounded-2xl bg-deep-900 border border-white/5 hover:border-neon-cyan/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(6,182,212,0.3)]">
+                    <!-- Thumbnail with Overlay -->
+                    <div class="aspect-video bg-slate-800 relative flex items-center justify-center overflow-hidden">
+                        <img src="https://img.youtube.com/vi/vejKgVLwM-U/hqdefault.jpg" alt="Aerobic Bicycle" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-deep-900 via-transparent to-transparent opacity-80"></div>
+                        
+                        <a href="https://youtube.com/shorts/vejKgVLwM-U" target="_blank" class="absolute inset-0 flex items-center justify-center z-10">
+                            <div class="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-deep-900">
+                                <i class="ph-fill ph-play text-white text-2xl ml-1"></i>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6 relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-neon-cyan transition-colors">Aerobic Bicycle</h3>
+                        <p class="text-sm text-slate-400 mb-4">High-intensity cardio on specialized aquatic bikes.</p>
+                        <a href="https://youtube.com/shorts/vejKgVLwM-U" target="_blank" class="inline-flex items-center gap-2 w-full justify-center px-4 py-3 rounded-lg bg-white/5 hover:bg-neon-cyan hover:text-deep-900 text-white text-sm font-bold transition-all">
+                            <i class="ph-bold ph-youtube-logo text-lg"></i> Watch on YouTube
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Video 2: Water Treadmill -->
+                <div class="group relative overflow-hidden rounded-2xl bg-deep-900 border border-white/5 hover:border-neon-cyan/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(6,182,212,0.3)]">
+                    <!-- Thumbnail with Overlay -->
+                    <div class="aspect-video bg-slate-800 relative flex items-center justify-center overflow-hidden">
+                        <img src="https://img.youtube.com/vi/TtYINgsKDtA/hqdefault.jpg" alt="Underwater Treadmill" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-deep-900 via-transparent to-transparent opacity-80"></div>
+                        
+                        <a href="https://youtube.com/shorts/TtYINgsKDtA" target="_blank" class="absolute inset-0 flex items-center justify-center z-10">
+                            <div class="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-deep-900">
+                                <i class="ph-fill ph-play text-white text-2xl ml-1"></i>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6 relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-neon-cyan transition-colors">Underwater Treadmill</h3>
+                        <p class="text-sm text-slate-400 mb-4">Run freely. Zero impact. 100% effort.</p>
+                        <a href="https://youtube.com/shorts/TtYINgsKDtA" target="_blank" class="inline-flex items-center gap-2 w-full justify-center px-4 py-3 rounded-lg bg-white/5 hover:bg-neon-cyan hover:text-deep-900 text-white text-sm font-bold transition-all">
+                            <i class="ph-bold ph-youtube-logo text-lg"></i> Watch on YouTube
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Video 3: Water Aerobics -->
+                <div class="group relative overflow-hidden rounded-2xl bg-deep-900 border border-white/5 hover:border-neon-cyan/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_10px_40px_-10px_rgba(6,182,212,0.3)]">
+                    <!-- Thumbnail with Overlay -->
+                    <div class="aspect-video bg-slate-800 relative flex items-center justify-center overflow-hidden">
+                        <img src="https://img.youtube.com/vi/UGAP-8EbU7o/hqdefault.jpg" alt="Water Aerobics" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-deep-900 via-transparent to-transparent opacity-80"></div>
+                        
+                        <a href="https://www.youtube.com/shorts/UGAP-8EbU7o" target="_blank" class="absolute inset-0 flex items-center justify-center z-10">
+                            <div class="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 border-4 border-deep-900">
+                                <i class="ph-fill ph-play text-white text-2xl ml-1"></i>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6 relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-2 group-hover:text-neon-cyan transition-colors">Water Aerobics Demo</h3>
+                        <p class="text-sm text-slate-400 mb-4">Certified instructor-led group fitness in action.</p>
+                        <a href="https://www.youtube.com/shorts/UGAP-8EbU7o" target="_blank" class="inline-flex items-center gap-2 w-full justify-center px-4 py-3 rounded-lg bg-white/5 hover:bg-neon-cyan hover:text-deep-900 text-white text-sm font-bold transition-all">
+                            <i class="ph-bold ph-youtube-logo text-lg"></i> Watch on YouTube
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- NEW: Wave Separator Bottom -->
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
+            <svg class="relative block w-full h-[50px] md:h-[80px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="fill-deep-900"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Programs Grid -->
+    <section id="programs" class="py-24 relative overflow-hidden">
+        <div class="absolute top-1/2 left-0 w-64 h-64 bg-neon-purple rounded-full mix-blend-screen filter blur-[100px] opacity-10"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="text-center mb-16">
+                <span class="inline-block py-1 px-3 rounded-full bg-white/5 border border-white/10 text-slate-400 text-xs font-bold tracking-widest uppercase mb-4">Sinai Uni Kantara Branch</span>
+                <h2 class="font-display text-4xl font-bold text-white">Featured <span class="text-neon-cyan">Programs</span></h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Card 1: Aqua Zumba -->
+                <div class="glass-card p-8 rounded-3xl relative group overflow-hidden flex flex-col">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="ph-fill ph-waves text-8xl text-neon-cyan"></i>
+                    </div>
+                    <div class="inline-block self-start px-3 py-1 rounded bg-orange-500/20 text-orange-400 text-xs font-bold mb-4">High Energy</div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Aqua Zumba</h3>
+                    <p class="text-slate-400 mb-6 text-sm flex-grow">Fun, high-energy water dance that burns calories while protecting your knees.</p>
+                    
+                    <!-- PRO-SPEC FEATURE BADGES -->
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="group/feature flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-neon-cyan/20 cursor-default">
+                            <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 flex items-center justify-center text-neon-cyan group-hover/feature:scale-110 transition-transform">
+                                <i class="ph-fill ph-heartbeat text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-white font-bold text-sm leading-tight truncate">Cardio Intense</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider truncate">High BPM</p>
+                            </div>
+                        </div>
+
+                        <div class="group/feature flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-purple-500/20 cursor-default">
+                            <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-purple-500/20 to-pink-500/20 flex items-center justify-center text-neon-purple group-hover/feature:scale-110 transition-transform">
+                                <i class="ph-fill ph-music-notes text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-white font-bold text-sm leading-tight truncate">Music Driven</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider truncate">Rhythmic</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#contact" class="w-full py-3 rounded-xl border border-white/10 text-white text-sm font-bold hover:bg-white hover:text-deep-900 transition-colors text-center">
+                        Book Class
+                    </a>
+                </div>
+
+                <!-- Card 2: Hydrotherapy -->
+                <div class="glass-card p-8 rounded-3xl relative group overflow-hidden flex flex-col">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="ph-fill ph-person-simple-walk text-8xl text-neon-blue"></i>
+                    </div>
+                    <div class="inline-block self-start px-3 py-1 rounded bg-green-500/20 text-green-400 text-xs font-bold mb-4">Rehabilitation</div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Hydrotherapy</h3>
+                    <p class="text-slate-400 mb-6 text-sm flex-grow">Personalized sessions designed for injury recovery and joint pain relief.</p>
+                    
+                    <!-- PRO-SPEC FEATURE BADGES -->
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="group/feature flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-neon-blue/20 cursor-default">
+                            <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-blue-500/20 to-cyan-500/20 flex items-center justify-center text-neon-blue group-hover/feature:scale-110 transition-transform">
+                                <i class="ph-fill ph-user-focus text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-white font-bold text-sm leading-tight truncate">1-on-1 Coach</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider truncate">Private</p>
+                            </div>
+                        </div>
+
+                        <div class="group/feature flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-orange-500/20 cursor-default">
+                            <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-orange-500/20 to-red-500/20 flex items-center justify-center text-orange-400 group-hover/feature:scale-110 transition-transform">
+                                <i class="ph-fill ph-thermometer-hot text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-white font-bold text-sm leading-tight truncate">Warm Pools</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider truncate">Therapeutic</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#contact" class="w-full py-3 rounded-xl border border-white/10 text-white text-sm font-bold hover:bg-white hover:text-deep-900 transition-colors text-center">
+                        Request Session
+                    </a>
+                </div>
+                
+                <!-- NEW CARD: Swim Lessons -->
+                <div class="glass-card p-8 rounded-3xl relative group overflow-hidden flex flex-col">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="ph-fill ph-trophy text-8xl text-yellow-400"></i>
+                    </div>
+                    <div class="inline-block self-start px-3 py-1 rounded bg-yellow-500/20 text-yellow-400 text-xs font-bold mb-4">Education</div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Swim Lessons</h3>
+                    <p class="text-slate-400 mb-6 text-sm flex-grow">Professional instruction for all ages and skill levels, from beginners to advanced.</p>
+                    
+                    <!-- PRO-SPEC FEATURE BADGES -->
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="group/feature flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-yellow-400/20 cursor-default">
+                            <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-yellow-400/20 to-orange-400/20 flex items-center justify-center text-yellow-400 group-hover/feature:scale-110 transition-transform">
+                                <i class="ph-fill ph-student text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-white font-bold text-sm leading-tight truncate">All Ages</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider truncate">Inclusive</p>
+                            </div>
+                        </div>
+
+                        <div class="group/feature flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-yellow-400/20 cursor-default">
+                            <div class="w-10 h-10 shrink-0 rounded-full bg-gradient-to-tr from-yellow-400/20 to-orange-400/20 flex items-center justify-center text-yellow-400 group-hover/feature:scale-110 transition-transform">
+                                <i class="ph-fill ph-medal text-xl"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="text-white font-bold text-sm leading-tight truncate">Certified</h4>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wider truncate">Expert Staff</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#contact" class="w-full py-3 rounded-xl border border-white/10 text-white text-sm font-bold hover:bg-white hover:text-deep-900 transition-colors text-center">
+                        Enroll Now
+                    </a>
+                </div>
+
+                <!-- Card 4: Open Swim -->
+                <div class="glass-card p-8 rounded-3xl relative group overflow-hidden flex flex-col">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="ph-fill ph-swimming-pool text-8xl text-white"></i>
+                    </div>
+                    
+                    <div class="inline-block self-start px-3 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-bold mb-4">Open Session</div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Open Swim</h3>
+                    <p class="text-slate-400 mb-6 text-sm flex-grow">Access our pools and equipment at your own pace. Perfect for self-guided workouts.</p>
+                    
+                    <!-- ENHANCED TAGS FOR EQUIPMENT -->
+                    <div class="flex flex-wrap gap-2 mb-6">
+                        <div class="px-3 py-2 bg-deep-900/50 rounded-lg border border-white/5 text-[10px] font-bold text-slate-300 flex items-center gap-1">
+                            <i class="ph-fill ph-bicycle text-neon-cyan"></i> Bikes
+                        </div>
+                        <div class="px-3 py-2 bg-deep-900/50 rounded-lg border border-white/5 text-[10px] font-bold text-slate-300 flex items-center gap-1">
+                            <i class="ph-fill ph-waves text-neon-cyan"></i> Noodles
+                        </div>
+                        <div class="px-3 py-2 bg-deep-900/50 rounded-lg border border-white/5 text-[10px] font-bold text-slate-300 flex items-center gap-1">
+                            <i class="ph-fill ph-barbell text-neon-cyan"></i> Dumbbells
+                        </div>
+                        <div class="px-3 py-2 bg-deep-900/50 rounded-lg border border-white/5 text-[10px] font-bold text-slate-300 flex items-center gap-1">
+                            <i class="ph-fill ph-sneaker-move text-neon-cyan"></i> Treadmills
+                        </div>
+                    </div>
+                    
+                    <a href="#contact" class="w-full py-3 rounded-xl border border-white/10 text-white text-sm font-bold hover:bg-white hover:text-deep-900 transition-colors text-center">
+                        Get Pass
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scientific Benefits -->
+    <section id="benefits" class="py-24 bg-deep-800 relative">
+        <!-- NEW: Wave Separator Top -->
+        <div class="absolute top-0 left-0 w-full overflow-hidden leading-none">
+            <svg class="relative block w-full h-[50px] md:h-[80px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="fill-deep-900"></path>
+            </svg>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10 pt-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                <div>
+                    <h2 class="font-display text-3xl font-bold text-white">Why It <span class="text-neon-cyan">Works</span></h2>
+                    <p class="text-slate-400 mt-2">The science behind aquatic resistance.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="p-6 rounded-2xl bg-deep-900 border border-white/5 text-center hover:border-neon-cyan/50 transition-colors">
+                    <i class="ph-duotone ph-bone text-4xl text-neon-cyan mb-3 mx-auto"></i>
+                    <h4 class="font-bold text-white text-sm mb-1">Joint Load</h4>
+                    <p class="text-xs text-slate-400">Reduction via buoyancy</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-deep-900 border border-white/5 text-center hover:border-purple-500/50 transition-colors">
+                    <i class="ph-duotone ph-lightning text-4xl text-purple-500 mb-3 mx-auto"></i>
+                    <h4 class="font-bold text-white text-sm mb-1">Activation</h4>
+                    <p class="text-xs text-slate-400">Neuromuscular boost</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-deep-900 border border-white/5 text-center hover:border-red-500/50 transition-colors">
+                    <i class="ph-duotone ph-heartbeat text-4xl text-red-500 mb-3 mx-auto"></i>
+                    <h4 class="font-bold text-white text-sm mb-1">Recovery</h4>
+                    <p class="text-xs text-slate-400">Hydrostatic pressure</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-deep-900 border border-white/5 text-center hover:border-blue-500/50 transition-colors">
+                    <i class="ph-duotone ph-arrows-out-line-horizontal text-4xl text-blue-500 mb-3 mx-auto"></i>
+                    <h4 class="font-bold text-white text-sm mb-1">Adaptive</h4>
+                    <p class="text-xs text-slate-400">Scalable resistance</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / CTA -->
+    <footer id="contact" class="pb-32 pt-20 bg-gradient-to-b from-deep-900 to-black text-center">
+        <div class="container mx-auto px-6">
+            <div class="max-w-xl mx-auto">
+                <div class="w-16 h-16 mx-auto bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-cyan-500/20 mb-6">
+                    <i class="ph-bold ph-calendar-plus text-3xl text-white"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-white mb-4">Start Your Recovery</h2>
+                <p class="text-slate-400 mb-8">Located at Sinai Uni Kantara Branch. Open to students and public members.</p>
+                
+                <!-- ENHANCED FOOTER BOTTOM SECTION -->
+                <div class="mt-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <p class="text-slate-500 text-sm font-medium">© 2025 Sinai Uni Kantara Branch</p>
+                    
+                    <div class="flex items-center gap-4">
+                        <a href="https://www.instagram.com/sinaiunieg/" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-gradient-to-br hover:from-purple-500 hover:to-pink-500 hover:text-white transition-all duration-300 hover:-translate-y-1">
+                            <i class="ph-fill ph-instagram-logo text-xl"></i>
+                        </a>
+                        <a href="https://www.facebook.com/sinaiunieg/" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-300 hover:-translate-y-1">
+                            <i class="ph-fill ph-facebook-logo text-xl"></i>
+                        </a>
+                        <a href="https://twitter.com/sinaiunieg" target="_blank" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-black hover:text-white transition-all duration-300 hover:-translate-y-1">
+                            <i class="ph-fill ph-x-logo text-xl"></i>
+                        </a>
+                        <!-- Added Email -->
+                        <a href="mailto:info@su.edu.eg" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-slate-400 hover:bg-red-500 hover:text-white transition-all duration-300 hover:-translate-y-1">
+                            <i class="ph-fill ph-envelope-simple text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- SCROLL REVEAL LOGIC ---
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.remove('opacity-0', 'translate-y-10');
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                    }
+                });
+            });
+
+            document.querySelectorAll('section > div').forEach((el) => {
+                el.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-10');
+                observer.observe(el);
+            });
+
+            // --- WAVE TRANSITION LOGIC ---
+            const homeBtn = document.getElementById('home-btn');
+            const waveOverlay = document.getElementById('wave-overlay');
+
+            homeBtn.addEventListener('click', (e) => {
+                e.preventDefault(); // Stop instant jump
+                
+                // 1. Start Animation
+                waveOverlay.classList.remove('washing');
+                void waveOverlay.offsetWidth; // Trigger reflow
+                waveOverlay.classList.add('washing');
+
+                // 2. Scroll to top when screen is covered (approx 500ms in)
+                setTimeout(() => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'auto' // Instant scroll while hidden
+                    });
+                    
+                    // Update URL hash without jumping
+                    history.pushState(null, null, '#home');
+                }, 500);
+
+                // 3. Cleanup class after animation ends (1.5s)
+                setTimeout(() => {
+                    waveOverlay.classList.remove('washing');
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>
